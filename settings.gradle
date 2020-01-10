@@ -1,1 +1,1 @@
-include ':app', ':barista'
+include ':app', ':./barista-android/barista'

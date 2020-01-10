@@ -1,0 +1,3 @@
+[submodule "barista-android"]
+	path = barista-android
+	url = https://github.com/softeng-aueb/barista-android.git
