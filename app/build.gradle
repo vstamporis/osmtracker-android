@@ -16,7 +16,6 @@ android {
         testApplicationId "net.osmtracker.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         testInstrumentationRunnerArgument("listener", "gr.aueb.android.barista.core.BaristaRunListener")
-        testInstrumentationRunnerArgument("host", "192.168.9.21")
     }
 
     lintOptions {
@@ -39,17 +38,17 @@ android {
     buildTypes {
 
 
-        def BARISTA_HOST = "baristaHost"
+        def BARISTA_ENDPOINT = "baristaEndpoint"
         def STRING = "String"
 
         debug {
-            buildConfigField STRING, BARISTA_HOST, "\"192.168.9.21\""
+            buildConfigField STRING, BARISTA_ENDPOINT, "\"192.168.9.21\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
-            buildConfigField STRING, BARISTA_HOST, "192.168.9.21"
+            buildConfigField STRING, BARISTA_ENDPOINT, "\"192.168.9.21\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             if (signingConfigs.hasProperty('release')) {
@@ -103,7 +102,7 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-core:3.0.2"
     androidTestImplementation "com.android.support.test:rules:1.0.2"
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation project(path: ':./barista-android/barista')
+    androidTestImplementation project(path: ':barista-android/barista')
 
     compileOnly 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
 }
