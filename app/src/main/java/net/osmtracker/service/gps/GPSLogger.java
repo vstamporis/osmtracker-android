@@ -91,6 +91,8 @@ public class GPSLogger extends Service implements LocationListener {
 	 */
 	private long gpsLoggingInterval;
 	private long gpsLoggingMinDistance;
+
+	private double latitude, longitude;
 	
 	/**
 	 * sensors for magnetic orientation
@@ -283,7 +285,10 @@ public class GPSLogger extends Service implements LocationListener {
 	public void onLocationChanged(Location location) {		
 		// We're receiving location, so GPS is enabled
 		isGpsEnabled = true;
-		
+
+		latitude = location.getLatitude();
+		longitude = location.getLongitude();
+
 		// first of all we check if the time from the last used fix to the current fix is greater than the logging interval
 		if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
 			lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix
@@ -392,4 +397,11 @@ public class GPSLogger extends Service implements LocationListener {
 		return isTracking;
 	}
 
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
 }

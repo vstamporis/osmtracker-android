@@ -2,7 +2,6 @@ package net.osmtracker.activity;
 
 import java.io.File;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -67,9 +66,9 @@ import android.widget.Toast;
 /**
  * Main track logger activity. Communicate with the GPS service to display GPS
  * status, and allow user to record waypoints.
- * 
+ *
  * @author Nicolas Guillaumin
- * 
+ *
  */
 public class TrackLogger extends Activity {
 
@@ -83,7 +82,7 @@ public class TrackLogger extends Activity {
 	 * picture for us.
 	 */
 	private static final int REQCODE_IMAGE_CAPTURE = 0;
-	
+
 	/**
 	 * Request code for callback after the gallery was chosen by the user.
 	 */
@@ -94,11 +93,11 @@ public class TrackLogger extends Activity {
 	 */
 	public static final String STATE_IS_TRACKING = "isTracking";
 
-    /**
-     * The character to separate the tags of a track
-     */
+	/**
+	 * The character to separate the tags of a track
+	 */
 	public static final String TAG_SEPARATOR = ",";
-	
+
 	/**
 	 * Bundle state key button state.
 	 */
@@ -125,12 +124,12 @@ public class TrackLogger extends Activity {
 	 * goes to settings/about/other screen.
 	 */
 	private boolean checkGPSFlag = true;
-	
+
 	/**
 	 * Keeps track of the image file when taking a picture.
 	 */
 	private File currentImageFile;
-	
+
 	/**
 	 * Keeps track of the current track id.
 	 */
@@ -140,27 +139,27 @@ public class TrackLogger extends Activity {
 	 * Handles the bind to the GPS Logger service
 	 */
 	private ServiceConnection gpsLoggerConnection = new GPSLoggerServiceConnection(this);
-	
+
 	/**
 	 * Keeps the SharedPreferences
 	 */
 	private SharedPreferences prefs = null;
-	
+
 	/**
 	 * keeps track of current button status
 	 */
 	private boolean buttonsEnabled = false;
-	
+
 	/**
 	 * constant for text note dialog
 	 */
 	public static final int DIALOG_TEXT_NOTE = 1;
-	
+
 	/**
 	 * constant for voice recording dialog
 	 */
 	public static final int DIALOG_VOICE_RECORDING = 2;
-	
+
 	/**
 	 * sensor listener for the azimuth display
 	 */
@@ -169,7 +168,6 @@ public class TrackLogger extends Activity {
 	private AudioManager mAudioManager;
 
 	private ComponentName mediaButtonReceiver;
-
 
 	/*
 	 *  Avoid taking care of duplicated elements
@@ -195,26 +193,26 @@ public class TrackLogger extends Activity {
 
 		// get shared preferences
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		
+
 		// Set application theme according to user settings
 		setTheme(getResources().getIdentifier(ThemeValidator.getValidTheme(prefs, getResources()), null, null));
 
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.tracklogger);
-		
+
 		// set trackLogger to keepScreenOn depending on the user's preference
 		View trackLoggerView = findViewById(R.id.tracklogger_root);
 		trackLoggerView.setKeepScreenOn(prefs.getBoolean(OSMTracker.Preferences.KEY_UI_DISPLAY_KEEP_ON, OSMTracker.Preferences.VAL_UI_DISPLAY_KEEP_ON));
 
 		// we'll restore previous button state, GPSStatusRecord will enable all buttons, as soon as there's a gps fix
-		if(savedInstanceState != null){
+		if (savedInstanceState != null) {
 			buttonsEnabled = savedInstanceState.getBoolean(STATE_BUTTONS_ENABLED, false);
 		}
-		
+
 		// create sensor listener
 		sensorListener = new SensorListener();
-		
+
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		mediaButtonReceiver = new ComponentName(this, MediaButtonReceiver.class.getName());
 	}
@@ -223,7 +221,7 @@ public class TrackLogger extends Activity {
 	 * It takes the string array layoutNameTags and convert each position in the array, then, create a string with all the tags separated with a comma.
 	 * Also, the default layout is excluded and the 'osmtracker' tag is added by default.
 	 */
-	private void saveTagsForTrack(){
+	private void saveTagsForTrack() {
 		// Obtain the current track id and initialize the values variable
 		Uri trackUri = ContentUris.withAppendedId(TrackContentProvider.CONTENT_URI_TRACK, currentTrackId);
 		ContentValues values = new ContentValues();
@@ -232,25 +230,25 @@ public class TrackLogger extends Activity {
 		HashSet<String> tagsToSave = new HashSet<>();
 
 		// Get and add previously saved tags to the set
-		Cursor cursor = getContentResolver().query( trackUri, null, null, null, null);
+		Cursor cursor = getContentResolver().query(trackUri, null, null, null, null);
 		int tagsIndex = cursor.getColumnIndex(TrackContentProvider.Schema.COL_TAGS);
 		String previouslySavedTags = null;
 		while (cursor.moveToNext()) {
-			if(cursor.getString(tagsIndex) != null) {
+			if (cursor.getString(tagsIndex) != null) {
 				previouslySavedTags = cursor.getString(tagsIndex);
 			}
 		}
-		if(previouslySavedTags != null){
-			for (String tag : previouslySavedTags.split(TAG_SEPARATOR)){
+		if (previouslySavedTags != null) {
+			for (String tag : previouslySavedTags.split(TAG_SEPARATOR)) {
 				tagsToSave.add(tag);
 			}
 		}
 
 
 		// Add the names of the layouts that were used in the track to the set
-		for(String layoutFileName : layoutNameTags){
+		for (String layoutFileName : layoutNameTags) {
 			//OSMTracker.Preferences.VAL_UI_BUTTONS_LAYOUT -> 'default'
-			if(! layoutFileName.equals(OSMTracker.Preferences.VAL_UI_BUTTONS_LAYOUT)){
+			if (!layoutFileName.equals(OSMTracker.Preferences.VAL_UI_BUTTONS_LAYOUT)) {
 				// Covert the file name to simple layout name
 				tagsToSave.add(CustomLayoutsUtils.convertFileName(layoutFileName));
 			}
@@ -263,10 +261,10 @@ public class TrackLogger extends Activity {
 		// Create the string with all tags
 		StringBuilder tagsString = new StringBuilder();
 
-		for(String tag : tagsToSave){
+		for (String tag : tagsToSave) {
 			tagsString.append(tag).append(TAG_SEPARATOR);
 		}
-		int lastIndex = tagsString.length()-1;
+		int lastIndex = tagsString.length() - 1;
 		tagsString.deleteCharAt(lastIndex);
 
 		//set the values tag and update the table
@@ -280,13 +278,13 @@ public class TrackLogger extends Activity {
 	protected void onResume() {
 
 		setTitle(getResources().getString(R.string.tracklogger) + ": #" + currentTrackId);
-		
+
 		// set trackLogger to  keepScreenOn depending on the user's preference
 		View trackLoggerView = findViewById(R.id.tracklogger_root);
 		trackLoggerView.setKeepScreenOn(prefs.getBoolean(OSMTracker.Preferences.KEY_UI_DISPLAY_KEEP_ON, OSMTracker.Preferences.VAL_UI_DISPLAY_KEEP_ON));
-	
+
 		// Fix to the user's preferred orientation (if any)  
-		String preferredOrientation = prefs.getString(OSMTracker.Preferences.KEY_UI_ORIENTATION, 
+		String preferredOrientation = prefs.getString(OSMTracker.Preferences.KEY_UI_ORIENTATION,
 				OSMTracker.Preferences.VAL_UI_ORIENTATION);
 		if (preferredOrientation.equals(OSMTracker.Preferences.VAL_UI_ORIENTATION_PORTRAIT)) {
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -295,7 +293,7 @@ public class TrackLogger extends Activity {
 		} else {
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 		}
-		
+
 		// Try to inflate the buttons layout
 		try {
 			String userLayout = prefs.getString(OSMTracker.Preferences.KEY_UI_BUTTONS_LAYOUT, OSMTracker.Preferences.VAL_UI_BUTTONS_LAYOUT);
@@ -307,23 +305,23 @@ public class TrackLogger extends Activity {
 				File layoutFile = new File(
 						Environment.getExternalStorageDirectory(),
 						OSMTracker.Preferences.VAL_STORAGE_DIR
-						+ File.separator + Preferences.LAYOUTS_SUBDIR
-						+ File.separator + userLayout);
+								+ File.separator + Preferences.LAYOUTS_SUBDIR
+								+ File.separator + userLayout);
 				mainLayout = new UserDefinedLayout(this, currentTrackId, layoutFile);
 			}
-			
+
 			((ViewGroup) findViewById(R.id.tracklogger_root)).removeAllViews();
 			((ViewGroup) findViewById(R.id.tracklogger_root)).addView(mainLayout);
-			
+
 		} catch (Exception e) {
 			Log.e(TAG, "Error while inflating UserDefinedLayout", e);
 			Toast.makeText(this, R.string.error_userlayout_parsing, Toast.LENGTH_SHORT).show();
 		}
-		
+
 		// Check GPS status
 		if (checkGPSFlag
 				&& prefs.getBoolean(OSMTracker.Preferences.KEY_GPS_CHECKSTARTUP,
-						OSMTracker.Preferences.VAL_GPS_CHECKSTARTUP)) {
+				OSMTracker.Preferences.VAL_GPS_CHECKSTARTUP)) {
 			checkGPSProvider();
 		}
 
@@ -337,12 +335,12 @@ public class TrackLogger extends Activity {
 		// We can't use BIND_AUTO_CREATE here, because when we'll ubound
 		// later, we want to keep the service alive in background
 		bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-		
+
 		// connect the sensor listener
 		sensorListener.register(this);
 
 		setEnabledActionButtons(buttonsEnabled);
-		if(!buttonsEnabled){
+		if (!buttonsEnabled) {
 			Toast.makeText(this, R.string.tracklogger_waiting_gps, Toast.LENGTH_LONG).show();
 		}
 
@@ -364,16 +362,16 @@ public class TrackLogger extends Activity {
 					.setIcon(android.R.drawable.ic_dialog_alert)
 					.setMessage(getResources().getString(R.string.tracklogger_gps_disabled_hint))
 					.setCancelable(true).setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-						}
-					}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-						}
-					}).create().show();
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+				}
+			}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			}).create().show();
 			checkGPSFlag = false;
 		}
 	}

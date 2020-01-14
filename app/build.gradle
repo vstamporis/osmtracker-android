@@ -42,13 +42,13 @@ android {
         def STRING = "String"
 
         debug {
-            buildConfigField STRING, BARISTA_ENDPOINT, "\"192.168.9.21\""
+            buildConfigField STRING, BARISTA_ENDPOINT, "\"192.168.42.58\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
-            buildConfigField STRING, BARISTA_ENDPOINT, "\"192.168.9.21\""
+            buildConfigField STRING, BARISTA_ENDPOINT, "\"192.168.42.58\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             if (signingConfigs.hasProperty('release')) {
@@ -126,5 +126,5 @@ android.applicationVariants.all { variant ->
 
 baristaSettings {
     port = 8040
-    host = "192.168.9.21"
+    host = "192.168.42.58"
 }

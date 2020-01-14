@@ -57,6 +57,7 @@ public class TextNoteDialog extends AlertDialog {
 		
 		// Text edit control for user input
 		input = new EditText(context);
+		input.setId(R.id.text_note_input);
 
 		// default settings
 		this.setTitle(R.string.gpsstatus_record_textnote);
