@@ -707,14 +707,14 @@ public class TrackManager extends ListActivity {
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
-		if (BuildConfig.DEBUG) {
-			try {
-				Class<?> emmaRTClass = Class.forName("com.vladium.emma.rt.RT");
-				Method dumpCoverageMethod = emmaRTClass.getMethod("dumpCoverageData", File.class, boolean.class, boolean.class);
-				dumpCoverageMethod.invoke(null, new File("sdcard/coverage.exec"), true, false);
-			} catch (Exception e) {}
-		}
+	protected void onDestroy() {
+		try {
+			Class<?> emmaRTClass = Class.forName("com.vladium.emma.rt.RT");
+			Method dumpCoverageMethod = emmaRTClass.getMethod("dumpCoverageData", File.class, boolean.class, boolean.class);
+			dumpCoverageMethod.invoke(null, new File("sdcard/coverage.exec"), true, false);
+		} catch (Exception e) {}
+
+		super.onDestroy();
 	}
+
 }
