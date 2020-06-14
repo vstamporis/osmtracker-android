@@ -23,28 +23,61 @@
 			</intent-filter>
 		</activity>
 		
-		<activity android:name="net.osmtracker.activity.TrackLogger" android:label="@string/tracklogger" android:launchMode="singleTop"/>
-		<activity android:name="net.osmtracker.activity.Preferences" android:label="@string/prefs" />
-		<activity android:name="net.osmtracker.activity.WaypointList" android:label="@string/wplist" />
-		<activity android:name="net.osmtracker.activity.TrackDetail" android:label="@string/trackdetail" />
+		<activity android:name="net.osmtracker.activity.TrackLogger" android:label="@string/tracklogger" android:launchMode="singleTop">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
+		<activity android:name="net.osmtracker.activity.Preferences" android:label="@string/prefs">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
+		<activity android:name="net.osmtracker.activity.WaypointList" android:label="@string/wplist">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
+		<activity android:name="net.osmtracker.activity.TrackDetail" android:label="@string/trackdetail">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
 		<activity android:name="net.osmtracker.activity.OpenStreetMapUpload" android:label="@string/osm_upload">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>
 				<category android:name="android.intent.category.BROWSABLE"/>
 				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.MONKEY" />
 				<data android:host="osm-upload" android:scheme="osmtracker"/>
 			</intent-filter>
 		</activity>
-		<activity android:name="net.osmtracker.activity.About" android:label="@string/about" />
-		<activity android:name="net.osmtracker.activity.DisplayTrack" android:label="@string/displaytrack" />
-		<activity android:name="net.osmtracker.activity.DisplayTrackMap" android:label="@string/displaytrackmap" />
+		<activity android:name="net.osmtracker.activity.About" android:label="@string/about">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
+		<activity android:name="net.osmtracker.activity.DisplayTrack" android:label="@string/displaytrack">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
+		<activity android:name="net.osmtracker.activity.DisplayTrackMap" android:label="@string/displaytrackmap">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
+		</activity>
 		<activity android:name="net.osmtracker.activity.ButtonsPresets">
 			<intent-filter>
 				<action android:name="launch_buttons_presets"/>
 				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.MONKEY" />
 			</intent-filter>
 		</activity>
 		<activity android:name="net.osmtracker.activity.AvailableLayouts">
+			<intent-filter>
+				<category android:name="android.intent.category.MONKEY" />
+			</intent-filter>
 		</activity>
     
 		<service android:name="net.osmtracker.service.gps.GPSLogger" android:exported="false">
