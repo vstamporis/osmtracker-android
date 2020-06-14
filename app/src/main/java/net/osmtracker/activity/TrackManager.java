@@ -1,6 +1,7 @@
 package net.osmtracker.activity;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import net.osmtracker.OSMTracker;
@@ -23,8 +24,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -39,6 +42,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.osmdroid.library.BuildConfig;
 
 /**
  * Lists existing tracks.
@@ -81,9 +86,17 @@ public class TrackManager extends ListActivity {
 	private Intent TrackLoggerStartIntent = null;
 	private ImageButton btnNewTrack;
 
+	@RequiresApi(api = Build.VERSION_CODES.M)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					1);
+		}
+
 		setContentView(R.layout.trackmanager);
 		getListView().setEmptyView(findViewById(R.id.trackmgr_empty));
 		registerForContextMenu(getListView());
@@ -693,5 +706,15 @@ public class TrackManager extends ListActivity {
 		}
 	}
 
-
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (BuildConfig.DEBUG) {
+			try {
+				Class<?> emmaRTClass = Class.forName("com.vladium.emma.rt.RT");
+				Method dumpCoverageMethod = emmaRTClass.getMethod("dumpCoverageData", File.class, boolean.class, boolean.class);
+				dumpCoverageMethod.invoke(null, new File("sdcard/coverage.exec"), true, false);
+			} catch (Exception e) {}
+		}
+	}
 }
