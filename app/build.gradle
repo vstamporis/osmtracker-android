@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'gr.aueb.android.barista-plugin'
+apply plugin: 'jacoco'
 
 android {
 
@@ -38,7 +39,10 @@ android {
                 signingConfig signingConfigs.release
             }
 
+        }
 
+        debug {
+            testCoverageEnabled true
         }
     }
 
@@ -99,4 +103,27 @@ android.applicationVariants.all { variant ->
         // Copying 'nb' resources to 'no' (See pull request #6)
         output.processResources.dependsOn([copyNorwegianValues, copyNorwegianXml])
     }
+}
+
+task jacocoTestReport(type: JacocoReport) {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class',
+                      '**/R$*.class',
+                      '**/BuildConfig.*',
+                      '**/Manifest*.*',
+                      '**/*Test*.*',
+                      'android/**/*.*',
+                      '**/data/models/*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: "$project.rootDir", includes: [
+            "coverage.exec"
+    ])
 }
