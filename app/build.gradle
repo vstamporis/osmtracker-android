@@ -2,6 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'gr.aueb.android.barista-plugin'
 apply plugin: 'jacoco'
 
+repositories {
+    google()
+    jcenter()
+    mavenLocal()
+}
+
 android {
 
     useLibrary 'org.apache.http.legacy'
@@ -14,7 +20,8 @@ android {
         targetSdkVersion 28
         multiDexEnabled true
 
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArgument "listener", "gr.aueb.android.barista.core.BaristaRunListener"
     }
 
     signingConfigs {
@@ -59,7 +66,13 @@ android {
     }
 
     defaultConfig {
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArgument "listener", "gr.aueb.android.barista.core.BaristaRunListener"
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
 
 }
@@ -82,9 +95,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     // Required for instrumented tests
-    androidTestImplementation "com.android.support.test:runner:1.0.2"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:3.0.2"
-    androidTestImplementation "com.android.support.test:rules:1.0.2"
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+
+    // Barista Library
+    androidTestImplementation "gr.aueb.android:barista:1.0-beta"
+
+    androidTestImplementation "gr.aueb.android:barista:1.0-beta@aar"
 
     compileOnly 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
 }
@@ -127,4 +145,9 @@ task jacocoTestReport(type: JacocoReport) {
     executionData = fileTree(dir: "$project.rootDir", includes: [
             "coverage.exec"
     ])
+}
+
+baristaSettings {
+    port = 8040
+    host = "192.168.1.7"
 }
